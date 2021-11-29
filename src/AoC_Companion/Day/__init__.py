@@ -115,9 +115,9 @@ class Day(ABC):
         data = str(data)
         return data.split("\n")
 
-    def construct_data_package(self) -> Any:
-        raw_data = self.get_input()
-        return self.pre_process_input(data=raw_data)
+    def construct_data_package(self, data: Optional[Any] = None) -> Any:
+        data = data or self.get_input()
+        return self.pre_process_input(data=data)
 
     @classmethod
     def get_days(cls) -> List["Day"]:
