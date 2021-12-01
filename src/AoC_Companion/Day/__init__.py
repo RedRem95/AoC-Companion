@@ -10,6 +10,23 @@ from AoC_Companion.misc import download
 
 
 NOT_UNLOCKED_MESSAGE = "Please don't repeatedly request this endpoint before it unlocks! The calendar countdown is synchronized with the server time; the link will be enabled on the calendar the instant this puzzle becomes available."
+"""
+    AoC-Companion Day source that houses all sourcecode needed to implement a day and get its result per task
+    Copyright (C) 2021  RedRem
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""
 
 class StarTask(IntEnum):
     Task01 = 1
@@ -116,7 +133,8 @@ class Day(ABC):
         return data.split("\n")
 
     def construct_data_package(self, data: Optional[Any] = None) -> Any:
-        data = data or self.get_input()
+        if data is None:
+            data = self.get_input()
         return self.pre_process_input(data=data)
 
     @classmethod
