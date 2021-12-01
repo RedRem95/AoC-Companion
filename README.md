@@ -1,9 +1,9 @@
-# AoC-Compabion
+# AoC-Companion
 
 Simple AoC helper program you can use to develop your own solutions in python.
 Simply install it in your python environment using pip from git.
 
-##Usage
+## Usage
 
 This is a simple usage example
 ```python

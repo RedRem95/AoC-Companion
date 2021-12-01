@@ -11,6 +11,7 @@ setuptools.setup(
     description="Companion for AoC_Companion development in python",
     long_description=long_description,
     long_description_content_type="text/markdown",
+    license_files=('LICENSE',),
     url="https://github.com/RedRem95/AoC-Companion",
     project_urls={
         "Bug Tracker": "https://github.com/RedRem95/AoC-Companion/issues",
