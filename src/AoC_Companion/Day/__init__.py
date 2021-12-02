@@ -1,12 +1,3 @@
-import datetime
-import os
-from abc import ABC, abstractmethod
-from enum import IntEnum
-from typing import Optional, Dict, List, Any, Tuple, Iterable
-
-from AoC_Companion.misc import download
-
-NOT_UNLOCKED_MESSAGE = "Please don't repeatedly request this endpoint before it unlocks! The calendar countdown is synchronized with the server time; the link will be enabled on the calendar the instant this puzzle becomes available."
 """
     AoC-Companion Day source that houses all sourcecode needed to implement a day and get its result per task
     Copyright (C) 2021  RedRem
@@ -24,6 +15,16 @@ NOT_UNLOCKED_MESSAGE = "Please don't repeatedly request this endpoint before it 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+
+import datetime
+import os
+from abc import ABC, abstractmethod
+from enum import IntEnum
+from typing import Optional, Dict, List, Any, Tuple, Iterable
+
+from AoC_Companion.misc import download
+
+NOT_UNLOCKED_MESSAGE = "Please don't repeatedly request this endpoint before it unlocks! The calendar countdown is synchronized with the server time; the link will be enabled on the calendar the instant this puzzle becomes available."
 
 
 class StarTask(IntEnum):
@@ -93,6 +94,15 @@ class TaskResult:
         for r in results:
             lines.append(r.to_string(show_log=show_log))
             max_len = max(max_len, max(len(x) for x in lines[-1]))
+        durations = [x.get_duration() for x in results if x.get_duration() >= 0]
+        conclusion_lines = [
+            f"Results:      {len(results)}",
+            f"Days run:     {len(set(x.get_day().get_year() for x in results if x.get_day() is not None))}",
+            f"Sum Duration: {sum(durations) if len(durations) > 0 else 0}",
+            f"Avg Duration: {sum(durations) / len(durations) if len(durations) > 0 else 0}",
+            f"*Only tasks that provided a duration>=0 are considered in duration conclusion"
+        ]
+        max_len = max(max_len, max(len(x) for x in conclusion_lines))
         tmpl = "| {line:%ss} |" % (max_len)
         split_line = "".join(("+", '-' * (max_len + 2), "+"))
         ret = [split_line]
@@ -100,6 +110,8 @@ class TaskResult:
             for line in r:
                 ret.append(tmpl.format(line=line))
             ret.append(split_line)
+        ret.extend([tmpl.format(line=x) for x in conclusion_lines])
+        ret.append(split_line)
         return "\n".join(ret)
 
 
