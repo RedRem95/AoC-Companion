@@ -1,13 +1,10 @@
 import datetime
-import json
 import os
-import time
 from abc import ABC, abstractmethod
 from enum import IntEnum
-from typing import Optional, Dict, List, Generator, Any, Tuple, Iterable
+from typing import Optional, Dict, List, Any, Tuple, Iterable
 
 from AoC_Companion.misc import download
-
 
 NOT_UNLOCKED_MESSAGE = "Please don't repeatedly request this endpoint before it unlocks! The calendar countdown is synchronized with the server time; the link will be enabled on the calendar the instant this puzzle becomes available."
 """
@@ -28,13 +25,15 @@ NOT_UNLOCKED_MESSAGE = "Please don't repeatedly request this endpoint before it 
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
+
 class StarTask(IntEnum):
     Task01 = 1
     Task02 = 2
 
 
 class TaskResult:
-    def __init__(self, day: "Day", task: StarTask, result: str, duration: float, log: List[str] = None):
+    def __init__(self, result: str, day: "Day" = None, task: StarTask = None, duration: float = None,
+                 log: List[str] = None):
         self._day = day
         self._task = task
         self._result = result
@@ -47,18 +46,32 @@ class TaskResult:
     def get_task(self) -> StarTask:
         return self._task
 
+    def set_day(self, day: "Day"):
+        self._day = day
+
+    def set_task(self, task: StarTask):
+        self._task = task
+
+    def _get_day_name(self) -> str:
+        day = self.get_day()
+        return str(None) if day is None else day.get_name()
+
+    def _get_task_name(self) -> str:
+        task = self.get_task()
+        return str(None) if task is None else task.name
+
     def get_result(self) -> str:
-        return self._result
+        return str(self._result)
 
     def get_duration(self) -> float:
-        return self._duration
+        return -1 if self._duration is None else self._duration
 
     def get_log(self) -> List[str]:
-        return self._log.copy()
+        return [] if self._log is None else self._log.copy()
 
     def to_string(self, show_log: bool = True) -> List[str]:
         ret = [
-            f"{self.get_day().get_name()} - {self.get_task().name}: {self.get_result()}",
+            f"{self._get_day_name()} - {self._get_task_name()}: {self.get_result()}",
             f"{'Duration':14s}: {datetime.timedelta(seconds=self.get_duration())}"
         ]
         log = self.get_log()
@@ -70,9 +83,11 @@ class TaskResult:
         return ret
 
     @staticmethod
-    def format(results: List["TaskResult"], show_log: bool = True) -> str:
+    def format(*results: "TaskResult", show_log: bool = True) -> str:
         if len(results) == 0:
             return "No results"
+        if len(results) == 1:
+            return "\n".join(results[0].to_string(show_log=show_log))
         lines = []
         max_len = 0
         for r in results:
@@ -113,11 +128,18 @@ class Day(ABC):
         return ret
 
     def run(self, task: StarTask, data: Any) -> Optional[TaskResult]:
+        ret: Optional[TaskResult] = None
         if task == StarTask.Task01:
-            return self.run_t1(data=data)
+            ret = self.run_t1(data=data)
         if task == StarTask.Task02:
-            return self.run_t2(data=data)
-        raise KeyError(f"Task {task.name} not implemented")
+            ret = self.run_t2(data=data)
+        if ret is None:
+            raise KeyError(f"Task {task.name} not implemented")
+        if ret.get_day() is None:
+            ret.set_day(day=self)
+        if ret.get_task() is None:
+            ret.set_task(task=task)
+        return ret
 
     @abstractmethod
     def run_t1(self, data: Any) -> Optional[TaskResult]:
