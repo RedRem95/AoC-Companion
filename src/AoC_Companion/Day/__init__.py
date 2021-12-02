@@ -91,19 +91,28 @@ class TaskResult:
             return "\n".join(results[0].to_string(show_log=show_log))
         lines = []
         max_len = 0
+        combined_days = {k: [] for k in {x.get_day() for x in results if x.get_day() is not None}}
         for r in results:
             lines.append(r.to_string(show_log=show_log))
             max_len = max(max_len, max(len(x) for x in lines[-1]))
+            if r.get_day() is not None and r.get_duration() >= 0:
+                combined_days[r.get_day()].append(r.get_duration())
         durations = [x.get_duration() for x in results if x.get_duration() >= 0]
+        sort_tasks = sorted([x for x in results if x.get_duration() >= 0], key=TaskResult.get_duration)
+        sort_days = sorted([(x, sum(t) / len(t)) for x, t in combined_days.items() if len(t) > 0],
+                           key=lambda x: x[1]) if len(combined_days) > 1 else []
         conclusion_lines = [
             f"Results:       {len(results)}",
-            f"Days run:      {len(set(x.get_day().get_year() for x in results if x.get_day() is not None))}",
+            f"Days run:      {len(set(x.get_day() for x in results if x.get_day() is not None))}",
             f"Sum Duration*: {sum(durations) if len(durations) > 0 else 0}",
             f"Avg Duration*: {sum(durations) / len(durations) if len(durations) > 0 else 0}",
-            f"*Only tasks that provided a duration>=0 are considered"
+            f"Fastest Day*:  {sort_days[0][0].get_name()} @ avg {sort_days[0][1]:.6f}" if len(sort_days) > 0 else None,
+            f"Fastest Task*: {sort_tasks[0]._get_task_name()} @ {sort_tasks[0]._get_day_name()}",
+            f"*Only durations>=0 are considered"
         ]
+        conclusion_lines = [x for x in conclusion_lines if x is not None]
         max_len = max(max_len, max(len(x) for x in conclusion_lines))
-        tmpl = "| {line:%ss} |" % (max_len)
+        tmpl = "| {line:%ss} |" % max_len
         split_line = "".join(("+", '-' * (max_len + 2), "+"))
         ret = [split_line]
         for r in lines:
