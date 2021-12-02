@@ -96,11 +96,11 @@ class TaskResult:
             max_len = max(max_len, max(len(x) for x in lines[-1]))
         durations = [x.get_duration() for x in results if x.get_duration() >= 0]
         conclusion_lines = [
-            f"Results:      {len(results)}",
-            f"Days run:     {len(set(x.get_day().get_year() for x in results if x.get_day() is not None))}",
-            f"Sum Duration: {sum(durations) if len(durations) > 0 else 0}",
-            f"Avg Duration: {sum(durations) / len(durations) if len(durations) > 0 else 0}",
-            f"*Only tasks that provided a duration>=0 are considered in duration conclusion"
+            f"Results:       {len(results)}",
+            f"Days run:      {len(set(x.get_day().get_year() for x in results if x.get_day() is not None))}",
+            f"Sum Duration*: {sum(durations) if len(durations) > 0 else 0}",
+            f"Avg Duration*: {sum(durations) / len(durations) if len(durations) > 0 else 0}",
+            f"*Only tasks that provided a duration>=0 are considered"
         ]
         max_len = max(max_len, max(len(x) for x in conclusion_lines))
         tmpl = "| {line:%ss} |" % (max_len)
