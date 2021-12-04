@@ -117,7 +117,7 @@ class TaskResult:
             f"Sum Duration*: {sum(durations) if len(durations) > 0 else 0}",
             f"Avg Duration*: {sum(durations) / len(durations) if len(durations) > 0 else 0}",
             f"Fastest Day*:  {sort_days[0][0].get_name()} @ avg {sort_days[0][1]:.6f}" if len(sort_days) > 0 else None,
-            f"Fastest Task*: {sort_tasks[0]._get_task_name()} @ {sort_tasks[0]._get_day_name()}",
+            f"Fastest Task*: {sort_tasks[0]._get_task_name()} @ {sort_tasks[0]._get_day_name() if len(sort_tasks) > 0 else None}",
             f"*Only durations>=0 are considered"
         ]
         conclusion_lines = [x for x in conclusion_lines if x is not None]
