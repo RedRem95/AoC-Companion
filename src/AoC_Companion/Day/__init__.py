@@ -18,6 +18,7 @@
 
 import datetime
 import os
+import time
 from abc import ABC, abstractmethod
 from enum import IntEnum
 from typing import Optional, Dict, List, Any, Tuple, Iterable
@@ -33,7 +34,7 @@ class StarTask(IntEnum):
 
 
 class TaskResult:
-    def __init__(self, result: str, day: "Day" = None, task: StarTask = None, duration: float = None,
+    def __init__(self, result: Any, day: "Day" = None, task: StarTask = None, duration: float = None,
                  log: List[str] = None):
         self._day = day
         self._task = task
@@ -53,6 +54,15 @@ class TaskResult:
     def set_task(self, task: StarTask):
         self._task = task
 
+    def is_duration_none(self) -> bool:
+        return self._duration is None
+
+    def set_duration(self, duration: float):
+        if self.is_duration_none():
+            self._duration = duration
+        else:
+            raise ValueError("There is already a valid duration set")
+
     def _get_day_name(self) -> str:
         day = self.get_day()
         return str(None) if day is None else day.get_name()
@@ -61,11 +71,11 @@ class TaskResult:
         task = self.get_task()
         return str(None) if task is None else task.name
 
-    def get_result(self) -> str:
-        return str(self._result)
+    def get_result(self) -> Any:
+        return self._result
 
     def get_duration(self) -> float:
-        return -1 if self._duration is None else self._duration
+        return -1 if self.is_duration_none() else self._duration
 
     def get_log(self) -> List[str]:
         return [] if self._log is None else self._log.copy()
@@ -150,16 +160,22 @@ class Day(ABC):
 
     def run(self, task: StarTask, data: Any) -> Optional[TaskResult]:
         ret: Optional[TaskResult] = None
+        t1 = time.time()
         if task == StarTask.Task01:
             ret = self.run_t1(data=data)
-        if task == StarTask.Task02:
+        elif task == StarTask.Task02:
             ret = self.run_t2(data=data)
+        t2 = time.time()
         if ret is None:
             raise KeyError(f"Task {task.name} not implemented")
         if ret.get_day() is None:
             ret.set_day(day=self)
         if ret.get_task() is None:
             ret.set_task(task=task)
+        try:
+            ret.set_duration(duration=t2 - t1)
+        except ValueError:
+            pass
         return ret
 
     @abstractmethod
