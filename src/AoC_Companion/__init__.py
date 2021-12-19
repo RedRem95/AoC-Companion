@@ -3,4 +3,4 @@
     Copyright (C) 2021  RedRem
 """
 
-__version__ = "0.0.7.2"
+__version__ = "0.0.8.0"

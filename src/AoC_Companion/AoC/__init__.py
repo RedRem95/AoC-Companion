@@ -16,11 +16,11 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
-
-import os
 import datetime
-from typing import Optional, Union, List, Dict
 import json
+import os
+import sys
+from typing import Optional, Union, List, Iterable
 
 from AoC_Companion.Day import Day, TaskResult
 
@@ -42,8 +42,17 @@ class AoC:
         if len(days) == 0:
             days = tuple(x.get_day() for x in self.get_days())
 
+        days_iterator: Iterable[Union[int]] = days
+        try:
+            if len(days) > 1:
+                # noinspection PyUnresolvedReferences
+                import tqdm
+                days_iterator = tqdm.tqdm(days_iterator, desc="Running days", leave=False, unit="d")
+        except ImportError:
+            pass
+
         ret = []
-        for d in days:
+        for d in days_iterator:
             try:
                 day: Day = Day.__class_getitem__(item=(self.get_year(), d))
                 data = day.construct_data_package()
@@ -80,6 +89,13 @@ class AoC:
                         args.update(json.load(conf_in))
                 module_dir = os.path.relpath(os.path.join(source_folder, folder), base_folder)
                 tmp = importlib.import_module(module_dir.replace(os.path.sep, "."))
-                tmp = getattr(tmp, folder)
-                ret.append(tmp(**args))
+                try:
+                    tmp_class = getattr(tmp, folder)
+                    ret.append(tmp_class(**args))
+                except AttributeError:
+                    sys.stderr.write(f"Found matching module {tmp} but could not find correctly formatted class inside"
+                                     f"\nSearched for class {folder}"
+                                     f"\nPlease check that the class name is the same as the surrounding package and "
+                                     f"the parameters are correctly setup\n")
+
         return ret
