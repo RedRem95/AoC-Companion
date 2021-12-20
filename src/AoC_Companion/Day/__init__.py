@@ -162,12 +162,12 @@ class Day(ABC):
 
     def run(self, task: StarTask, data: Any) -> Optional[TaskResult]:
         ret: Optional[TaskResult] = None
-        t1 = time.time()
+        t1 = time.perf_counter()
         if task == StarTask.Task01:
             ret = self.run_t1(data=data)
         elif task == StarTask.Task02:
             ret = self.run_t2(data=data)
-        t2 = time.time()
+        t2 = time.perf_counter()
         if ret is None:
             raise KeyError(f"Task {task.name} not implemented")
         if ret.get_day() is None:
