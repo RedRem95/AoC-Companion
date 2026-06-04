@@ -27,11 +27,7 @@ setuptools.setup(
         "License :: OSI Approved :: Apache 2.0",
         'Natural Language :: English',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
-        'Programming Language :: Python :: 3.9',
-        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
     ],
     entry_points={
         'console_scripts': [
@@ -39,7 +35,7 @@ setuptools.setup(
         ],
     },
     packages=setuptools.find_packages(include=['AoC_Companion', 'AoC_Companion.*']),
-    python_requires=">=3.6",
+    python_requires=">=3.11",
     install_requires=requirements,
     requires=requirements,
     include_package_data=True,

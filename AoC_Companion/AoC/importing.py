@@ -20,7 +20,7 @@ import importlib.util
 
 def import_stuff(path: str):
     path = os.path.abspath(path=path)
-    spec = importlib.util.spec_from_file_location("AoC.usercode", path)
+    spec = importlib.util.spec_from_file_location("AoC", path)
     mod = importlib.util.module_from_spec(spec)
-    sys.modules["AoC.usercode"] = mod
+    sys.modules["AoC"] = mod
     spec.loader.exec_module(mod)

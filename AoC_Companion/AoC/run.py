@@ -31,7 +31,7 @@ def run(
     if stream is None:
         stream = sys.stdout.write
 
-    stream(f"┏ Running AoC-Companion {__version__}\n")
+    stream(f"┏ Running AoC-Companion {__version__} (PY {'.'.join(str(x) for x in sys.version_info[:3])})\n")
     first = True
 
     def log_fnc(_t: Any):
